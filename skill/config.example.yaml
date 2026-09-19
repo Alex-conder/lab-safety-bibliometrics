@@ -1,0 +1,58 @@
+# 配置样例：文献计量与事故案例耦合分析管线
+# 用法：BIBLIO_ROOT=<输出根目录> 逐阶段运行 scripts/ 下脚本；本文件为参数参照
+
+project:
+  name: "高校实验室安全研究热点与事故特征演变"
+  period: [2000, 2026]
+  end_note: "末期非完整年时需在文中注明截至月份"
+
+search_cn:
+  database: "CNKI"
+  query: '主题 = （高校 OR 大学 OR 高等学校 OR 高等院校） AND 实验室 AND （安全 OR 事故 OR 风险 OR 隐患 OR 管理）'
+  source_type: "学术期刊"
+  supplementary: ["万方（主题检索，仅查全）", "维普（专业检索 M=，仅查全）"]
+
+search_en:
+  sources: ["OpenAlex", "Semantic Scholar"]
+  query: '(university OR college OR "higher education") AND laboratory AND (safety OR accident OR incident OR risk OR hazard OR management)'
+  fields: "题名/摘要"
+  types: ["article", "review"]
+  language: "English"
+
+screening:
+  dedup_key: "题名规范化（去非字母数字+小写+压缩空格）+ 第一作者 + 年份"
+  cn_rules: "无安全主题词剔除（见 34_prescreen.py 的 SAFETY_TERMS）"
+  en_rules: "临床噪声规则见 assets/clinical_noise.json"
+  boundary_rulings: "高职高专纳入；校内在管校企合作实验室纳入；高校直属附属医院教学科研实验室纳入；非附属医院不纳入"
+  reliability: "固定随机种子抽样双人复核：排除集 600、保留集 300；报告漏筛率/误筛率/Kappa"
+
+accidents:
+  base_library: "叶元兴等（2025）176 起（1984—2024）"
+  increment_window: ["2025-01", "2026-09"]
+  codebook: "assets/accident_codebook.md"
+  double_coding: "双人背靠背 + 直接原因优先仲裁；报告逐变量 Kappa"
+
+analysis:
+  kleinberg: {gamma: 1.0, min_duration: 2, impl: "Python 自实现（参数同 CiteSpace 默认）"}
+  lda: {cn_k: 10, en_k: 12, random_state: 42, stability_range: [8, 14]}
+  gap_thresholds: {"匹配": "<5pp", "轻度错位": "5—10pp", "显著错位": ">10pp"}
+  trend_test: "Cochran–Armitage（R 49_trend_test.R）"
+  rate_test: "Poisson 率比精确检验（条件二项检验）"
+  its: "对数线性纽结模型 + HC1 稳健标准误；含水平跳跃 Poisson 对照"
+
+exposure:
+  anchors:
+    - {year: 2007, labs: 24731, scope: "普通本科高校"}
+    - {year: 2018, labs: 36953, scope: "普通本科高校"}
+    - {year: 2021, labs: 66600, scope: "含本科层次职业学校（口径扩大）"}
+  method: "锚点几何插值；宽窄双口径情景；率比 95%CI 对数法"
+
+outputs:
+  root_env: "BIBLIO_ROOT（默认 <项目根>/outputs）"
+  key_files:
+    - "final_analysis_set.csv（中文最终分析集）"
+    - "en_analysis/full/（英文全量结果）"
+    - "risk_research_gap.csv（耦合缺口）"
+    - "coupling_coordination.csv（耦合协调度）"
+    - "its_results.md（分段回归结果）"
+    - "exposure/（暴露量分析）"

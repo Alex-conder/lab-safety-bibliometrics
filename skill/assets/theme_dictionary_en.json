@@ -1,0 +1,5 @@
+{
+  "说明": "英文锚定词表（全文匹配，含电气/老化专检词）",
+  "anchor_terms": ["laboratory safety","laboratory accident","safety management","safety culture","safety climate","safety education","biosafety","biosecurity","risk assessment","risk management","hazardous chemicals","chemical safety","laboratory waste","emergency management","occupational health","personal protective equipment","human factors","unsafe behavior","hazard identification","inherent safety","smart laboratory","accident causation","electrical safety","fire safety","laboratory fire","equipment safety","aging equipment","wiring"],
+  "generic_stoplist_note": "LDA/词频分析需剔除学科泛词（Medicine/Biology/Computer science 等，见 48/61 号脚本内 GENERIC 集合）"
+}

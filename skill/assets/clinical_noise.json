@@ -1,0 +1,6 @@
+{
+  "说明": "英文临床实验室噪声剔除规则：命中 clinical 且无 rescue 挽救词则剔除",
+  "clinical_terms": ["hospital","clinical","patient","diagnos","pathol","medical laboratory","specimen","blood test","clinic","nhs","ward","surgery","oncology","radiology","pharmacokinet","therapeutic"],
+  "rescue_terms": ["laboratory safety","lab safety","biosafety","biohazard","biosecurity","safety culture","chemical safety","laboratory accident","lab accident","safety management","hazardous","lab-oratory"],
+  "validation_note": "抽样验证建议：固定随机种子抽 200 条，检查标题是否含安全强信号，预估误剔率"
+}
